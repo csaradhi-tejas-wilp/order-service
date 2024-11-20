@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,6 +34,7 @@ import com.bits.pilani.orderservice.util.TokenUtil;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
+@RequestMapping("/order")
 public class OrderController {
 
     @Autowired
@@ -43,7 +45,7 @@ public class OrderController {
 
     @Operation(summary = "Place a new order")
     @Authorize( roles= {Role.CUSTOMER})
-    @PostMapping("/order")
+    @PostMapping
     public ResponseEntity<ResponseTO> placeOrder(@RequestBody OrderRequest orderRequest,
                                                     @RequestHeader("Authorization") String token) throws Exception 
     {
@@ -54,7 +56,7 @@ public class OrderController {
 
     @Operation(summary = "Get an order based on orderId")
     @Authorize( roles= {Role.CUSTOMER, Role.ADMIN, Role.DELIVERY_PERSONNEL})
-    @GetMapping("/order/{orderId}")
+    @GetMapping("/{orderId}")
     public ResponseEntity<ResponseTO> getOrder(@PathVariable int orderId,
                                                 @RequestHeader("Authorization") String token) throws CustomException{
 
@@ -72,7 +74,7 @@ public class OrderController {
 
     @Operation(summary = "Update orderStatus")
     @Authorize( roles= {Role.CUSTOMER, Role.RESTAURANT_OWNER, Role.ADMIN, Role.DELIVERY_PERSONNEL})
-    @PatchMapping("order/{orderId}")
+    @PatchMapping("{orderId}")
     public ResponseEntity<ResponseTO> updateOrder(@PathVariable int orderId, 
                                 @RequestBody OrderRequest orderRequest,
                                 @RequestHeader("Authorization") String token) throws Exception{
@@ -83,7 +85,7 @@ public class OrderController {
 
     @Operation(summary = "Get all orders")
     @Authorize(roles = {Role.CUSTOMER, Role.ADMIN, Role.RESTAURANT_OWNER, Role.DELIVERY_PERSONNEL})
-    @GetMapping("/orders")
+    @GetMapping
     public ResponseEntity<ResponseTO> getOrders(@RequestHeader("Authorization") String token,
                                                 @RequestParam(name = "orderStatus", required = false) String orderStatus
                                                 ) throws Exception{

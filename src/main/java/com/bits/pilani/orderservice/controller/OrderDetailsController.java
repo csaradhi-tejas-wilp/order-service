@@ -19,7 +19,7 @@ import com.bits.pilani.orderservice.util.TokenUtil;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
-@RequestMapping("/orderdetails/")
+@RequestMapping("/order/details")
 public class OrderDetailsController {
 
     @Autowired
@@ -29,7 +29,7 @@ public class OrderDetailsController {
     OrderDetailsRepo orderDetailsRepo;
 
     @Operation(summary = "Get a list of popular items based on restaurant and/or cuisine")
-    @GetMapping("/popular/items")
+    @GetMapping("/popular/item")
     public ResponseEntity<ResponseTO> getMostOrderedItems(@RequestParam(required = false) String cuisineId,
                                                             @RequestParam(required = false) String restaurantId) throws CustomException {
         
@@ -59,7 +59,7 @@ public class OrderDetailsController {
     }
 
     @Operation(summary = "Get a list of items I ordered the most based on restaurant and/or cuisine")
-    @GetMapping("/popular/items/personal")
+    @GetMapping("/popular/item/personal")
     public ResponseEntity<ResponseTO> getMostOrderedItems( @RequestHeader("Authorization") String token,
                                                             @RequestParam(required = false) String cuisineId,
                                                             @RequestParam(required = false) String restaurantId) throws CustomException {
