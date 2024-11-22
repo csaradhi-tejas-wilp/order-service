@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.bits.pilani.orderservice.exception.CustomException;
+import com.bits.pilani.orderservice.producer.OrderProducer;
+import com.bits.pilani.orderservice.dto.OrderProducerObj;
 import com.bits.pilani.orderservice.dto.OrderRequest;
 import com.bits.pilani.orderservice.dto.OrderResponse;
 import com.bits.pilani.orderservice.dto.OrderResponseDTO;
@@ -25,6 +27,9 @@ public class OrderService {
 
     @Autowired
     OrderDetailsService orderDetailsService;
+
+    @Autowired
+    OrderProducer orderProducer;
 
     public LocalDateTime getEstimatedTime(int kms, LocalDateTime currentTime)
     {
@@ -131,7 +136,6 @@ public class OrderService {
             Order savedOrder = orderRepo.save(order);
             orderDetailsService.saveOrderDetails(savedOrder);
 
-
             return OrderConvertor.toOrderResponse(savedOrder);
         }
         else{
@@ -148,6 +152,14 @@ public class OrderService {
         }
 
         if(validateStatus(order.getOrderStatus(), orderRequest.getOrderStatus())){
+            
+            if(orderRequest.getOrderStatus().equals(OrderStatus.READY_FOR_PICKUP)){
+                //Placing the order in queue for delivery service to pick it up
+
+                OrderProducerObj orderProducerObj = new OrderProducerObj(orderId, order.getExpectedTime().toString());
+                orderProducer.sendOrderReady(orderProducerObj.toString());
+            }
+            
             if(orderRequest.getOrderStatus().equals(OrderStatus.OUT_FOR_DELIVERY)){
                 if(orderRequest.getDeliveryPersonnelId() != null && orderRequest.getDeliveryPersonnelId() != 0)
                 {
