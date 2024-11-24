@@ -147,6 +147,11 @@ public class OrderService {
 
         Order order = orderRepo.findByUserIdAndOrderId(userId, orderId);
 
+        if(orderRequest.getOrderStatus().equals(OrderStatus.CANCELLED) ||
+        orderRequest.getOrderStatus().equals(OrderStatus.REJECTED)){
+            order.setOrderStatus(orderRequest.getOrderStatus());
+            return OrderConvertor.toOrderResponse(orderRepo.save(order));
+        }
         if(order == null){
             throw new CustomException(HttpStatus.NOT_FOUND, "Order not found");
         }
